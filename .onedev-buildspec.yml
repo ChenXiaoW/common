@@ -1,1 +1,27 @@
 version: 12
+jobs:
+- name: ci
+  steps:
+  - !CheckoutStep
+    name: checkoutCode
+    cloneCredential: !DefaultCredential {}
+    withLfs: false
+    withSubmodules: false
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  - !CommandStep
+    name: pushToGithub
+    image: apline/git
+    commands:
+    - git remote add gitAd git@@github.com:ChenXiaoW/common.git
+    - 'git fetch '
+    - git checkout master
+    - git pull gitAd master
+    - git push gitAd master
+    useTTY: false
+    condition: ALL_PREVIOUS_STEPS_WERE_SUCCESSFUL
+  retryCondition: never
+  maxRetries: 3
+  retryDelay: 30
+  cpuRequirement: 500
+  memoryRequirement: 256
+  timeout: 3600
